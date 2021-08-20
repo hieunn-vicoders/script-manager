@@ -27,6 +27,9 @@ class ScriptController extends ApiController
                 ['except' => config('script.auth_middleware.admin.except')]
             );
         }
+        else{
+            throw new Exception("Admin middleware configuration is required");
+        }
 
         $this->transformer = ScriptTransformer::class;
     }
