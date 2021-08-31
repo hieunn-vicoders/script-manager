@@ -3,6 +3,7 @@
 namespace VCComponent\Laravel\Script\Test\Feature\Api\Admin;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Auth\User;
 use VCComponent\Laravel\Script\Entities\Script;
 use VCComponent\Laravel\Script\Test\TestCase;
 
@@ -12,6 +13,8 @@ class ScriptControllerTest extends TestCase {
     /** @test */
     public function can_get_script_list_by_admin_router()
     {
+        $user = factory(User::class)->create();
+
         $scripts = factory(Script::class, 5)->create();
 
         $scripts = $scripts->map(function ($s) {
@@ -23,7 +26,7 @@ class ScriptControllerTest extends TestCase {
         $listIds = array_column($scripts, 'id');
         array_multisort($listIds, SORT_DESC, $scripts);
 
-        $response = $this->call('GET', 'api/admin/scripts/list');
+        $response = $this->actingAs($user)->call('GET', 'api/admin/scripts/list');
 
         $response->assertStatus(200);
 
@@ -34,6 +37,8 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function can_get_script_list_with_json_constraints() {
+        $user = factory(User::class)->create();
+
         $scripts = factory(Script::class, 5)->create();
 
         $constraints_title = $scripts[0]->title;
@@ -46,7 +51,7 @@ class ScriptControllerTest extends TestCase {
         })->toArray();
 
         $constraints = '{"title":"'.$constraints_title.'", "position":"'.$constraints_position.'"}';
-        $response = $this->call('GET', 'api/admin/scripts/list?constraints='.$constraints);
+        $response = $this->actingAs($user)->call('GET', 'api/admin/scripts/list?constraints='.$constraints);
 
         $response->assertStatus(200);
         $response->assertJson([
@@ -56,6 +61,8 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function can_get_script_list_with_search() {
+        $user = factory(User::class)->create();
+
         $scripts = factory(Script::class, 5)->create();
 
         $search_title = $scripts[0]->title;
@@ -66,7 +73,7 @@ class ScriptControllerTest extends TestCase {
             return $s;
         })->toArray();
 
-        $response = $this->call('GET', 'api/admin/scripts/list?search='.$search_title);
+        $response = $this->actingAs($user)->call('GET', 'api/admin/scripts/list?search='.$search_title);
 
         $response->assertStatus(200);
         $response->assertJson([
@@ -76,6 +83,8 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function can_get_script_list_with_order_by() {
+        $user = factory(User::class)->create();
+
         $scripts = factory(Script::class, 5)->create();
 
         $search_title = $scripts[0]->title;
@@ -91,7 +100,7 @@ class ScriptControllerTest extends TestCase {
 
         $order_by = '{"title":"desc"}';
 
-        $response = $this->call('GET', 'api/admin/scripts/list?order_by='.$order_by);
+        $response = $this->actingAs($user)->call('GET', 'api/admin/scripts/list?order_by='.$order_by);
 
         $response->assertStatus(200);
         $response->assertJson([
@@ -102,6 +111,8 @@ class ScriptControllerTest extends TestCase {
     /** @test */
     public function can_get_scripts_by_admin_router()
     {
+        $user = factory(User::class)->create();
+
         $scripts = factory(Script::class, 20)->create();
 
         $scripts = $scripts->map(function ($s) {
@@ -113,7 +124,7 @@ class ScriptControllerTest extends TestCase {
         $listIds = array_column($scripts, 'id');
         array_multisort($listIds, SORT_DESC, $scripts);
 
-        $response = $this->call('GET', 'api/admin/scripts');
+        $response = $this->actingAs($user)->call('GET', 'api/admin/scripts');
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -131,6 +142,8 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function can_get_scripts_with_constraints() {
+        $user = factory(User::class)->create();
+
         $scripts = factory(Script::class, 20)->create();
 
         $constraints_title = $scripts[0]->title;
@@ -144,7 +157,7 @@ class ScriptControllerTest extends TestCase {
 
         $constraints = '{"title":"'.$constraints_title.'", "position":"'.$constraints_position.'"}';
 
-        $response = $this->call('GET', 'api/admin/scripts?constraints='.$constraints);
+        $response = $this->actingAs($user)->call('GET', 'api/admin/scripts?constraints='.$constraints);
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -163,6 +176,8 @@ class ScriptControllerTest extends TestCase {
     /** @test */
     public function can_get_scripts_with_search()
     {
+        $user = factory(User::class)->create();
+
         $scripts = factory(Script::class, 5)->create();
 
         $scripts = $scripts->map(function ($s) {
@@ -171,7 +186,7 @@ class ScriptControllerTest extends TestCase {
             return $s;
         })->toArray();
 
-        $response = $this->call('GET', 'api/admin/scripts?search='.$scripts[0]['title']);
+        $response = $this->actingAs($user)->call('GET', 'api/admin/scripts?search='.$scripts[0]['title']);
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -190,6 +205,8 @@ class ScriptControllerTest extends TestCase {
     /** @test */
     public function can_get_scripts_with_order_by()
     {
+        $user = factory(User::class)->create();
+
         $scripts = factory(Script::class, 10)->create();
 
         $scripts = $scripts->map(function ($s) {
@@ -203,7 +220,7 @@ class ScriptControllerTest extends TestCase {
         $listTitle = array_column($scripts, 'title');
         array_multisort($listTitle, SORT_DESC, $scripts);
 
-        $response = $this->call('GET', 'api/admin/scripts?order_by='.$order_by);
+        $response = $this->actingAs($user)->call('GET', 'api/admin/scripts?order_by='.$order_by);
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -222,6 +239,8 @@ class ScriptControllerTest extends TestCase {
     /** @test */
     public function can_get_scripts_with_status()
     {
+        $user = factory(User::class)->create();
+
         $scripts = factory(Script::class, 5)->create();
 
         $status = $scripts[0]->status;
@@ -240,7 +259,7 @@ class ScriptControllerTest extends TestCase {
         array_multisort($listIds, SORT_DESC, $scripts);
 
 
-        $response = $this->call('GET', 'api/admin/scripts?status='.$status);
+        $response = $this->actingAs($user)->call('GET', 'api/admin/scripts?status='.$status);
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -259,6 +278,8 @@ class ScriptControllerTest extends TestCase {
     /** @test */
     public function can_get_scripts_with_position()
     {
+        $user = factory(User::class)->create();
+
         $scripts = factory(Script::class, 10)->create();
 
         $position = $scripts[0]->position;
@@ -277,7 +298,7 @@ class ScriptControllerTest extends TestCase {
         $listIds = array_column($scripts, 'id');
         array_multisort($listIds, SORT_DESC, $scripts);
 
-        $response = $this->call('GET', 'api/admin/scripts?position='.$position);
+        $response = $this->actingAs($user)->call('GET', 'api/admin/scripts?position='.$position);
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -295,9 +316,11 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function can_get_script_item_by_admin() {
+        $user = factory(User::class)->create();
+
         $script = factory(Script::class)->create();
 
-        $response = $this->call('GET', 'api/admin/scripts/'.$script->id);
+        $response = $this->actingAs($user)->call('GET', 'api/admin/scripts/'.$script->id);
         $response->assertStatus(200);
 
         $response->assertJson([
@@ -311,7 +334,9 @@ class ScriptControllerTest extends TestCase {
     
     /** @test */
     public function should_not_get_undefined_script() {
-        $response = $this->call('GET', 'api/admin/scripts/1');
+        $user = factory(User::class)->create();
+
+        $response = $this->actingAs($user)->call('GET', 'api/admin/scripts/1');
         $response->assertStatus(400);
 
         $response->assertJson([
@@ -321,9 +346,11 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function can_creat_script_by_admin() {
+        $user = factory(User::class)->create();
+
         $data = factory(Script::class)->make()->toArray();
 
-        $response = $this->json('POST', 'api/admin/scripts', $data);
+        $response = $this->actingAs($user)->json('POST', 'api/admin/scripts', $data);
 
         $response->assertStatus(200);
 
@@ -340,9 +367,11 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function should_not_create_script_without_title() {
+        $user = factory(User::class)->create();
+
         $data = factory(Script::class)->make()->toArray();
         unset($data['title']);
-        $response = $this->json('POST', 'api/admin/scripts', $data);
+        $response = $this->actingAs($user)->json('POST', 'api/admin/scripts', $data);
 
         $response->assertStatus(422);
         $response->assertJson([
@@ -357,9 +386,11 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function should_not_create_script_without_position() {
+        $user = factory(User::class)->create();
+
         $data = factory(Script::class)->make()->toArray();
         unset($data['position']);
-        $response = $this->json('POST', 'api/admin/scripts', $data);
+        $response = $this->actingAs($user)->json('POST', 'api/admin/scripts', $data);
 
         $response->assertStatus(422);
         $response->assertJson([
@@ -374,9 +405,11 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function should_not_create_script_without_content() {
+        $user = factory(User::class)->create();
+
         $data = factory(Script::class)->make()->toArray();
         unset($data['content']);
-        $response = $this->json('POST', 'api/admin/scripts', $data);
+        $response = $this->actingAs($user)->json('POST', 'api/admin/scripts', $data);
 
         $response->assertStatus(422);
         $response->assertJson([
@@ -391,13 +424,15 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function should_not_create_script_with_existed_title() {
+        $user = factory(User::class)->create();
+
         $data = factory(Script::class)->create()->toArray();
 
         $existed_title = $data['title'];
 
         $data = factory(Script::class)->make()->toArray();
         $data['title'] = $existed_title;
-        $response = $this->json('POST', 'api/admin/scripts', $data);
+        $response = $this->actingAs($user)->json('POST', 'api/admin/scripts', $data);
 
         $response->assertStatus(422);
         $response->assertJson([
@@ -412,6 +447,8 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function can_update_script_by_admin() {
+        $user = factory(User::class)->create();
+
         $script = factory(Script::class)->create();
 
         unset($script['created_at']);
@@ -424,7 +461,7 @@ class ScriptControllerTest extends TestCase {
 
         $data = $script->toArray();
 
-        $response = $this->json('PUT', 'api/admin/scripts/'.$id, $data);
+        $response = $this->actingAs($user)->json('PUT', 'api/admin/scripts/'.$id, $data);
 
         $response->assertStatus(200);
         $response->assertJson([
@@ -438,6 +475,8 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function should_not_update_script_with_emty_title() {
+        $user = factory(User::class)->create();
+
         $script = factory(Script::class)->create();
 
         unset($script['created_at']);
@@ -450,7 +489,7 @@ class ScriptControllerTest extends TestCase {
 
         $data = $script->toArray();
 
-        $response = $this->json('PUT', 'api/admin/scripts/'.$id, $data);
+        $response = $this->actingAs($user)->json('PUT', 'api/admin/scripts/'.$id, $data);
 
         $response->assertStatus(422);
         $response->assertJson([
@@ -465,6 +504,8 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function should_not_update_script_with_emty_position() {
+        $user = factory(User::class)->create();
+
         $script = factory(Script::class)->create();
 
         unset($script['created_at']);
@@ -477,7 +518,7 @@ class ScriptControllerTest extends TestCase {
 
         $data = $script->toArray();
 
-        $response = $this->json('PUT', 'api/admin/scripts/'.$id, $data);
+        $response = $this->actingAs($user)->json('PUT', 'api/admin/scripts/'.$id, $data);
 
         $response->assertStatus(422);
         $response->assertJson([
@@ -492,6 +533,8 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function should_not_update_script_with_emty_content() {
+        $user = factory(User::class)->create();
+
         $script = factory(Script::class)->create();
 
         unset($script['created_at']);
@@ -504,7 +547,7 @@ class ScriptControllerTest extends TestCase {
 
         $data = $script->toArray();
 
-        $response = $this->json('PUT', 'api/admin/scripts/'.$id, $data);
+        $response = $this->actingAs($user)->json('PUT', 'api/admin/scripts/'.$id, $data);
 
         $response->assertStatus(422);
         $response->assertJson([
@@ -519,6 +562,8 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function can_update_script_with_existed_title() {
+        $user = factory(User::class)->create();
+
         $scripts = factory(Script::class, 2)->create();
         $script = $scripts[0];
         unset($script['created_at']);
@@ -531,7 +576,7 @@ class ScriptControllerTest extends TestCase {
 
         $data = $script->toArray();
 
-        $response = $this->json('PUT', 'api/admin/scripts/'.$id, $data);
+        $response = $this->actingAs($user)->json('PUT', 'api/admin/scripts/'.$id, $data);
 
         $response->assertStatus(200);
         $response->assertJson([
@@ -546,6 +591,8 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function can_delete_script_by_admin() {
+        $user = factory(User::class)->create();
+
         $script = factory(Script::class)->create();
 
         $script = $script->toArray();
@@ -555,7 +602,7 @@ class ScriptControllerTest extends TestCase {
 
         $this->assertDatabaseHas('scripts', $script);
 
-        $response = $this->call('DELETE', 'api/admin/scripts/'.$script['id']);
+        $response = $this->actingAs($user)->call('DELETE', 'api/admin/scripts/'.$script['id']);
 
         $response->assertStatus(200);
         $response->assertJson(['success' => true]);
@@ -565,13 +612,15 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function can_update_script_status_by_admin() {
+        $user = factory(User::class)->create();
+
         $script = factory(Script::class)->create();
         $script->status = 2;
         unset($script['created_at']);
         unset($script['updated_at']);
         $script = $script->toArray();
 
-        $response = $this->json('PUT', 'api/admin/scripts/status/'.$script['id'], ['status' => $script['status'], 'title' => 'new title']);
+        $response = $this->actingAs($user)->json('PUT', 'api/admin/scripts/status/'.$script['id'], ['status' => $script['status'], 'title' => 'new title']);
 
         $response->assertStatus(200);
         $response->assertJson(['success' => true]);
@@ -580,25 +629,29 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function should_not_update_script_status_without_status() {
+        $user = factory(User::class)->create();
+
         $script = factory(Script::class)->create();
         $script->status = 2;
         unset($script['created_at']);
         unset($script['updated_at']);
         $script = $script->toArray();
 
-        $response = $this->json('PUT', 'api/admin/scripts/status/'.$script['id'], ['title' => 'new title']);
+        $response = $this->actingAs($user)->json('PUT', 'api/admin/scripts/status/'.$script['id'], ['title' => 'new title']);
 
         $response->assertStatus(500);
     }
 
     /** @test */
     public function should_not_update_undefined_script_status() {
+        $user = factory(User::class)->create();
+
         $script = factory(Script::class)->create();
         unset($script['created_at']);
         unset($script['updated_at']);
         $script = $script->toArray();
 
-        $response = $this->json('PUT', 'api/admin/scripts/status/0', ['status' => 1,'title' => 'new title']);
+        $response = $this->actingAs($user)->json('PUT', 'api/admin/scripts/status/0', ['status' => 1,'title' => 'new title']);
 
         $response->assertStatus(400);
         $response->assertJson(['message'=> "script not found"]);
@@ -606,13 +659,15 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function can_update_script_position_by_admin() {
+        $user = factory(User::class)->create();
+
         $script = factory(Script::class)->create();
         $script->position = "New position";
         unset($script['created_at']);
         unset($script['updated_at']);
         $script = $script->toArray();
 
-        $response = $this->json('PUT', 'api/admin/scripts/position/'.$script['id'], ['position' => $script['position'], 'title' => 'new title', 'status' => 'new status']);
+        $response = $this->actingAs($user)->json('PUT', 'api/admin/scripts/position/'.$script['id'], ['position' => $script['position'], 'title' => 'new title', 'status' => 'new status']);
 
         $response->assertStatus(200);
         $response->assertJson(['success' => true]);
@@ -621,24 +676,28 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function should_not_update_script_position_without_position() {
+        $user = factory(User::class)->create();
+
         $script = factory(Script::class)->create();
         unset($script['created_at']);
         unset($script['updated_at']);
         $script = $script->toArray();
 
-        $response = $this->json('PUT', 'api/admin/scripts/position/'.$script['id'], ['title' => 'new title', 'status' => 'new status']);
+        $response = $this->actingAs($user)->json('PUT', 'api/admin/scripts/position/'.$script['id'], ['title' => 'new title', 'status' => 'new status']);
 
         $response->assertStatus(500);
     }
 
     /** @test */
     public function should_not_update_undefined_script_position() {
+        $user = factory(User::class)->create();
+
         $script = factory(Script::class)->create();
         unset($script['created_at']);
         unset($script['updated_at']);
         $script = $script->toArray();
 
-        $response = $this->json('PUT', 'api/admin/scripts/status/0', ['position' => 'new postion','title' => 'new title']);
+        $response = $this->actingAs($user)->json('PUT', 'api/admin/scripts/status/0', ['position' => 'new postion','title' => 'new title']);
 
         $response->assertStatus(400);
         $response->assertJson(['message'=> "script not found"]);
@@ -646,6 +705,8 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function can_bulk_update_script_status_by_admin() {
+        $user = factory(User::class)->create();
+
         $scripts = factory(Script::class, 5)->create();
         $scripts = $scripts->map(function ($item) {
             unset($item['created_at']);
@@ -656,7 +717,7 @@ class ScriptControllerTest extends TestCase {
 
         $listIds = array_column($scripts, 'id');
 
-        $response = $this->json('PUT', 'api/admin/scripts/status/bulk', ["id" => $listIds, "status" => 2, "title"=> "try_to_update_new_title"]);
+        $response = $this->actingAs($user)->json('PUT', 'api/admin/scripts/status/bulk', ["id" => $listIds, "status" => 2, "title"=> "try_to_update_new_title"]);
 
         $response->assertStatus(200);
         $response->assertJson(['success' => true]);
@@ -668,6 +729,8 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function should_not_bulk_update_script_status_without_status() {
+        $user = factory(User::class)->create();
+
         $scripts = factory(Script::class, 5)->create();
         $scripts = $scripts->map(function ($item) {
             unset($item['created_at']);
@@ -678,7 +741,7 @@ class ScriptControllerTest extends TestCase {
 
         $listIds = array_column($scripts, 'id');
 
-        $response = $this->json('PUT', 'api/admin/scripts/status/bulk', ["id" => $listIds]);
+        $response = $this->actingAs($user)->json('PUT', 'api/admin/scripts/status/bulk', ["id" => $listIds]);
 
         $response->assertStatus(500);
         $response->assertJson(['message' => "Undefined index: status"]);
@@ -686,6 +749,8 @@ class ScriptControllerTest extends TestCase {
 
     /** @test */
     public function should_not_bulk_update_undefined_script_status() {
+        $user = factory(User::class)->create();
+
         $scripts = factory(Script::class, 5)->create();
         $scripts = $scripts->map(function ($item) {
             unset($item['created_at']);
@@ -694,7 +759,7 @@ class ScriptControllerTest extends TestCase {
             return $item;
         })->toArray();
 
-        $response = $this->json('PUT', 'api/admin/scripts/status/bulk', ["id" => [0,6]]);
+        $response = $this->actingAs($user)->json('PUT', 'api/admin/scripts/status/bulk', ["id" => [0,6]]);
 
         $response->assertStatus(400);
         $response->assertJson(['message' => "script not found"]);
