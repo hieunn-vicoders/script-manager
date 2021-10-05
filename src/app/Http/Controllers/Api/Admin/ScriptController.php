@@ -31,6 +31,9 @@ class ScriptController extends ApiController
         else{
             throw new Exception("Admin middleware configuration is required");
         }
+        else{
+            throw new Exception("Admin middleware configuration is required");
+        }
 
         $this->transformer = ScriptTransformer::class;
     }
