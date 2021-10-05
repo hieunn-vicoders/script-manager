@@ -1,6 +1,6 @@
 <?php
 
-namespace VCComponent\Laravel\Script\Test;
+namespace VCComponent\Laravel\Script\Test\Feature\Api\AdminWithoutMiddlewareConfig;
 
 use Cviebrock\EloquentSluggable\ServiceProvider;
 use Dingo\Api\Provider\LaravelServiceProvider;
@@ -32,8 +32,7 @@ class TestCase extends OrchestraTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->withFactories(__DIR__ . '/Stubs/factories');
-        $this->loadMigrationsFrom(__DIR__ . '/Stubs/migrations');
+        $this->withFactories(__DIR__ . '/../../../Stubs/factories');
     }
 
     /**
@@ -66,12 +65,7 @@ class TestCase extends OrchestraTestCase
             'enabled' => false,
         ]);
         $app['config']->set('script.auth_middleware', [
-            'admin' => [
-                [
-                    'middleware' => 'auth',
-                    'except'     => []
-                ]
-            ],
+            'admin' => null,
             'frontend' => [
                 'middleware' => '',
             ],

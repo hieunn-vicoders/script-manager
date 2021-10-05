@@ -2,6 +2,7 @@
 
 namespace VCComponent\Laravel\Script\Http\Controllers\Api\Admin;
 
+use Exception;
 use Illuminate\Http\Request;
 use VCComponent\Laravel\Script\Events\ScriptCreatedByAdminEvent;
 use VCComponent\Laravel\Script\Events\ScriptDeletedByAdminEvent;
@@ -21,11 +22,14 @@ class ScriptController extends ApiController
         $this->repository = $repository;
         $this->entity     = $repository->getEntity();
         $this->validator  = $validator;
-        if (config('script.auth_middleware.admin.middleware') !== '') {
-            $this->middleware(
-                config('script.auth_middleware.admin.middleware'),
-                ['except' => config('script.auth_middleware.admin.except')]
-            );
+
+        if (!empty(config('script.auth_middleware.admin'))) {
+            foreach (config('script.auth_middleware.admin') as $middleware) {
+                $this->middleware($middleware['middleware'], ['except' => $middleware['except']]);
+            }
+        }
+        else{
+            throw new Exception("Admin middleware configuration is required");
         }
 
         $this->transformer = ScriptTransformer::class;
